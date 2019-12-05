@@ -15,7 +15,7 @@ class Command(object):
         self.modes = command[-3::-1]
 
 
-class IntcodeMachine(object):
+class IntcodeComputer(object):
     def __init__(self, opcodes: List[BaseOpcode]):
         self.opcodes = {}
         for cls in opcodes:
@@ -59,6 +59,6 @@ class IntcodeMachine(object):
         return output
 
 
-intcodemachine = IntcodeMachine(
+computer = IntcodeComputer(
     [Halt, Add, Multipy, Input, Output, JumpIfTrue, JumpIfFalse, LessThan, Equals]
 )

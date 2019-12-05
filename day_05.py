@@ -1,17 +1,17 @@
 import util
 
-from intcode import intcodemachine
+from intcode import computer
 
 
 def part1(data):
 	program = data[:]
-	ret = intcodemachine.Run(program, 1)
+	ret = computer.Run(program, 1)
 	util.Answer(1, ret)
 
 		
 def part2(data):
 	program = data[:]
-	ret = intcodemachine.Run(program, 5)
+	ret = computer.Run(program, 5)
 	util.Answer(2, ret)
 
 

@@ -1,20 +1,20 @@
 import util
 
-from intcode import intcodemachine
+from intcode import computer
 
 
 def part1(data):
 
 	program = [1, 1, 1, 4, 99, 5, 6, 0, 99]
-	intcodemachine.Run(program)
+	computer.Run(program)
 	assert program[0] == 30
 
 	program = [1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50]
-	intcodemachine.Run(program)
+	computer.Run(program)
 	assert program[0] == 3500
 
 	program = data[:]
-	intcodemachine.Run(program)
+	computer.Run(program)
 
 	util.Answer(1, program[0])
 
@@ -26,7 +26,7 @@ def part2(data):
 			program[1] = noun
 			program[2] = verb
 
-			intcodemachine.Run(program)
+			computer.Run(program)
 			if program[0] == 19690720:
 				util.Answer(2, f"{100 * noun + verb} (noun: {noun}, verb: {verb})")
 				break
