@@ -1,5 +1,8 @@
+from typing import List
+
+
 class Register(object):
-    def __init__(self, address, memory):
+    def __init__(self, address: int, memory: List[int]):
         self.address = address
         self.memory = memory
 
@@ -17,8 +20,8 @@ class Register(object):
         else:
             self.address += value
 
-    def valid(self):
+    def valid(self) -> bool:
         return -1 < self.address < len(self.memory)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Memory[@{self.address}] = {self.value}"
