@@ -1,64 +1,38 @@
 import util
 
-
-class Opcode:
-	def __init__(self, params, command):
-		self.params = params
-		self.command = command
-
-	def Execute(self, cursor, memory):
-		self.command(*memory[cursor + 1:cursor + 1 + self.params], memory)
-		return self.params + 1
+from intcode import Memory, IntcodeMachine
+from intcode.opcodes import Halt, Add, Multipy
 
 
-def opcode_1(a, b, c, m):
-	m[c] = m[a] + m[b]
-
-
-def opcode_2(a, b, c, m):
-	m[c] = m[a] * m[b]
-
-
-opcodes = {
-	1: Opcode(3, opcode_1),
-	2: Opcode(3, opcode_2),
-}
-
-
-def ExecuteIntcode(program):
-	memory = program[:]
-	cursor = 0
-	opcode = memory[cursor]
-	while opcode != 99:
-		if opcode in opcodes:
-			cursor += opcodes[opcode].Execute(cursor, memory)
-			opcode = memory[cursor]
-		else:
-			print('Bad opcode {} at address {}')
-			break
-	return memory[0]
-
-
-def test(code, register0):
-	assert ExecuteIntcode(code) == register0
-
+machine = IntcodeMachine([Halt, Add, Multipy])
 
 def part1(data):
-	test([1, 1, 1, 4, 99, 5, 6, 0, 99], 30)
-	test([1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50], 3500)
 
-	util.Answer(1, ExecuteIntcode(data))
+	program = Memory([1, 1, 1, 4, 99, 5, 6, 0, 99])
+	machine.Run(program)
+	assert program.get(0) == 30
+
+	program = Memory([1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50])
+	machine.Run(program)
+	assert program.get(0) == 3500
+
+	program = Memory(data[:])
+	machine.Run(program)
+
+	util.Answer(1, program.get(0))
 
 
 def part2(data):
 	for noun in range(100):
 		for verb in range(100):
-			data[1] = noun
-			data[2] = verb
-			if ExecuteIntcode(data) == 19690720:
-				print(100 * noun + verb, noun, verb)
+			program = Memory(data[:]) # make a copy
+			program.set(1, noun)
+			program.set(2, verb)
 
-	util.Answer(2, None)
+			machine.Run(program)
+			if program.get(0) == 19690720:
+				util.Answer(2, f"{100 * noun + verb} (noun: {noun}, verb: {verb})")
+				break
 
 
 if __name__ == "__main__":
