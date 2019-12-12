@@ -2,7 +2,7 @@ from typing import List
 from copy import copy
 
 from intcode.exceptions import ProgramHalt
-from intcode.opcodes import *
+from intcode.instructions import instructions
 from intcode.register import Register
 
 
@@ -11,32 +11,32 @@ class Command(object):
         # padd
         command = f"{command:05}"
         # extract
-        self.code = command[-2:]
+        self.opcode = command[-2:]
         self.modes = command[-3::-1]
 
 
 class IntcodeComputer(object):
-    def __init__(self, opcodes: List[BaseOpcode]):
+    def __init__(self, instructions: List):
         self.opcodes = {}
-        for cls in opcodes:
-            opcode = cls.code().zfill(2)  # ensure padding
+        for instruction in instructions:
+            opcode = instruction.opcode.zfill(2)  # ensure padding
             assert opcode not in self.opcodes
-            self.opcodes[opcode] = cls()
+            self.opcodes[opcode] = instruction
 
     def Run(self, memory: List[int], input=None):
         output = None
         cursor = Register(0, memory)
         while True:
             command = Command(cursor.value)
-            if command.code not in self.opcodes:
-                raise Exception(f"Bad Opcode {command.code} ({cursor})")
+            if command.opcode not in self.opcodes:
+                raise Exception(f"Bad Opcode {command.opcode} ({cursor})")
 
-            opcode = self.opcodes[command.code]
+            instruction = self.opcodes[command.opcode]
 
             cursor.seek(1)
             # read parameters from memory and act on parameter mode
             parameters = []
-            for i in range(opcode.parametercount()):
+            for i in range(instruction.parametercount):
                 register = copy(cursor)
                 cursor.seek(1)
 
@@ -49,7 +49,7 @@ class IntcodeComputer(object):
 
             # execute opcode
             try:
-                ret = opcode(cursor, input, parameters)
+                ret = instruction.routine(cursor, input, parameters)
                 if ret is not None:
                     output = ret
                     print(output)
@@ -59,6 +59,4 @@ class IntcodeComputer(object):
         return output
 
 
-computer = IntcodeComputer(
-    [Halt, Add, Multipy, Input, Output, JumpIfTrue, JumpIfFalse, LessThan, Equals]
-)
+computer = IntcodeComputer(instructions)
