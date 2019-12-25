@@ -5,6 +5,7 @@ from types import GeneratorType
 from intcode.exceptions import ProgramHalt
 from intcode.instructions import instructions
 from intcode.register import Register
+from intcode.state import State
 
 
 class Command(object):
@@ -28,31 +29,35 @@ class IntcodeComputer(object):
         output = None
         if not isinstance(stdin, GeneratorType):
             stdin = (n for n in [stdin,])
-        cursor = Register(0, memory)
+
+        state = State(memory, stdin, verbose)
         while True:
-            command = Command(cursor.value)
+            command = Command(state.cursor.value)
             if command.opcode not in self.opcodes:
-                raise Exception(f"Bad Opcode {command.opcode} ({cursor})")
+                raise Exception(f"Bad Opcode {command.opcode} ({state.cursor})")
 
             instruction = self.opcodes[command.opcode]
 
-            cursor.seek(1)
+            state.cursor.seek(1)
             # read parameters from memory and act on parameter mode
             parameters = []
             for i in range(instruction.parametercount):
-                register = copy(cursor)
-                cursor.seek(1)
+                register = copy(state.cursor)
+                state.cursor.seek(1)
 
                 if (command.modes[i]) == "0":  # position mode
                     # interpret parameter as memory address to read
                     parameters.append(Register(register.value, memory))
-                if (command.modes[i]) == "1":  # immediate mode
+                elif (command.modes[i]) == "1":  # immediate mode
                     # interpret parameter as value
                     parameters.append(register)
+                elif (command.modes[i]) == "2":  # immediate mode
+                    # interpret parameter as value
+                    parameters.append(Register(state.relativebase + register.value, memory))
 
             # execute opcode
             try:
-                ret = instruction.routine(cursor, stdin, parameters, verbose)
+                ret = instruction.routine(state, parameters)
                 if ret is not None:
                     output = ret
                     if verbose:

@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from intcode.exceptions import ProgramHalt
 from intcode.register import Register
+from intcode.state import State
 
 
 def Instruction(name: str, opcode: str, parameters: int, routine):
@@ -13,52 +14,57 @@ def Instruction(name: str, opcode: str, parameters: int, routine):
     )
 
 
-def Halt(cursor: Register, input: int, parameters: List[Register], verbose):
+def Halt(state: State, parameters: List[Register]):
     raise ProgramHalt()
 
 
-def Add(cursor: Register, input: int, parameters: List[Register], verbose):
+def Add(state: State, parameters: List[Register]):
     parameters[2].value = parameters[0].value + parameters[1].value
     return None  # no output
 
 
-def Multipy(cursor: Register, input: int, parameters: List[Register], verbose):
+def Multipy(state: State, parameters: List[Register]):
     parameters[2].value = parameters[0].value * parameters[1].value
     return None  # no output
 
 
-def Input(cursor: Register, input: int, parameters: List[Register], verbose):
-    value = next(input)
-    if verbose:
+def Input(state: State, parameters: List[Register]):
+    value = next(state.stdin)
+    if state.verbose:
         print("Input:", value)
     parameters[0].value = value
     return None  # no output
 
 
-def Output(cursor: Register, input: int, parameters: List[Register], verbose):
+def Output(state: State, parameters: List[Register]):
     return parameters[0].value
 
 
-def JumpIfTrue(cursor: Register, input: int, parameters: List[Register], verbose):
+def JumpIfTrue(state: State, parameters: List[Register]):
     if parameters[0].value != 0:
-        cursor.seek(parameters[1].value, True)  # seek absolute
+        state.cursor.seek(parameters[1].value, True)  # seek absolute
     return None  # no output
 
 
-def JumpIfFalse(cursor: Register, input: int, parameters: List[Register], verbose):
+def JumpIfFalse(state: State, parameters: List[Register]):
     if parameters[0].value == 0:
-        cursor.seek(parameters[1].value, True)  # seek absolute
+        state.cursor.seek(parameters[1].value, True)  # seek absolute
     return None  # no output
 
 
-def LessThan(cursor: Register, input: int, parameters: List[Register], verbose):
+def LessThan(state: State, parameters: List[Register]):
     parameters[2].value = int(parameters[0].value < parameters[1].value)
     return None  # no output
 
 
-def Equals(cursor: Register, input: int, parameters: List[Register], verbose):
+def Equals(state: State, parameters: List[Register]):
     parameters[2].value = int(parameters[0].value == parameters[1].value)
     return None  # no output
+
+
+def OffsetRelativeBase(state: State, parameters: List[Register]):
+    state.relativebase += parameters[0].value
+    return None
 
 
 instructions = (
@@ -71,4 +77,5 @@ instructions = (
     Instruction("JumpIfFalse", "06", 2, JumpIfFalse),
     Instruction("LessThan", "07", 3, LessThan),
     Instruction("Equals", "08", 3, Equals),
+    Instruction("Equals", "09", 1, OffsetRelativeBase),
 )

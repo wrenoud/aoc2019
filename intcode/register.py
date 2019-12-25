@@ -6,12 +6,21 @@ class Register(object):
         self.address = address
         self.memory = memory
 
+    def _memcheck(self):
+        memsize = len(self.memory)
+        if self.address >= memsize:
+            grow = self.address - memsize + 1
+            for i in range(grow):
+                self.memory.append(0)
+
     @property
     def value(self) -> int:
+        self._memcheck()
         return self.memory[self.address]
 
     @value.setter
     def value(self, value: int):
+        self._memcheck()
         self.memory[self.address] = value
 
     def seek(self, value: int, absolute: bool = False):
