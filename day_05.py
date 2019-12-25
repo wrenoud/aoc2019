@@ -5,14 +5,14 @@ from intcode import computer
 
 def part1(data):
 	program = data[:]
-	ret = computer.Run(program, 1)
-	util.Answer(1, ret)
+	stdout = computer.Run(program, 1)
+	util.Answer(1, list(stdout)[-1])
 
 		
 def part2(data):
 	program = data[:]
-	ret = computer.Run(program, 5)
-	util.Answer(2, ret)
+	stdout = computer.Run(program, 5)
+	util.Answer(2, list(stdout)[-1])
 
 
 if __name__ == "__main__":

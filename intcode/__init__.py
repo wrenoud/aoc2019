@@ -1,5 +1,6 @@
 from typing import List
 from copy import copy
+from types import GeneratorType
 
 from intcode.exceptions import ProgramHalt
 from intcode.instructions import instructions
@@ -23,8 +24,10 @@ class IntcodeComputer(object):
             assert opcode not in self.opcodes
             self.opcodes[opcode] = instruction
 
-    def Run(self, memory: List[int], input=None):
+    def Run(self, memory: List[int], stdin=None, verbose=False):
         output = None
+        if not isinstance(stdin, GeneratorType):
+            stdin = (n for n in [stdin,])
         cursor = Register(0, memory)
         while True:
             command = Command(cursor.value)
@@ -49,14 +52,14 @@ class IntcodeComputer(object):
 
             # execute opcode
             try:
-                ret = instruction.routine(cursor, input, parameters)
+                ret = instruction.routine(cursor, stdin, parameters, verbose)
                 if ret is not None:
                     output = ret
-                    print(output)
+                    if verbose:
+                        print("Output:", output)
+                    yield ret
             except ProgramHalt:
                 break
-
-        return output
 
 
 computer = IntcodeComputer(instructions)

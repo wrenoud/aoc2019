@@ -13,47 +13,50 @@ def Instruction(name: str, opcode: str, parameters: int, routine):
     )
 
 
-def Halt(cursor: Register, input: int, parameters: List[Register]):
+def Halt(cursor: Register, input: int, parameters: List[Register], verbose):
     raise ProgramHalt()
 
 
-def Add(cursor: Register, input: int, parameters: List[Register]):
+def Add(cursor: Register, input: int, parameters: List[Register], verbose):
     parameters[2].value = parameters[0].value + parameters[1].value
     return None  # no output
 
 
-def Multipy(cursor: Register, input: int, parameters: List[Register]):
+def Multipy(cursor: Register, input: int, parameters: List[Register], verbose):
     parameters[2].value = parameters[0].value * parameters[1].value
     return None  # no output
 
 
-def Input(cursor: Register, input: int, parameters: List[Register]):
-    parameters[0].value = input
+def Input(cursor: Register, input: int, parameters: List[Register], verbose):
+    value = next(input)
+    if verbose:
+        print("Input:", value)
+    parameters[0].value = value
     return None  # no output
 
 
-def Output(cursor: Register, input: int, parameters: List[Register]):
+def Output(cursor: Register, input: int, parameters: List[Register], verbose):
     return parameters[0].value
 
 
-def JumpIfTrue(cursor: Register, input: int, parameters: List[Register]):
+def JumpIfTrue(cursor: Register, input: int, parameters: List[Register], verbose):
     if parameters[0].value != 0:
         cursor.seek(parameters[1].value, True)  # seek absolute
     return None  # no output
 
 
-def JumpIfFalse(cursor: Register, input: int, parameters: List[Register]):
+def JumpIfFalse(cursor: Register, input: int, parameters: List[Register], verbose):
     if parameters[0].value == 0:
         cursor.seek(parameters[1].value, True)  # seek absolute
     return None  # no output
 
 
-def LessThan(cursor: Register, input: int, parameters: List[Register]):
+def LessThan(cursor: Register, input: int, parameters: List[Register], verbose):
     parameters[2].value = int(parameters[0].value < parameters[1].value)
     return None  # no output
 
 
-def Equals(cursor: Register, input: int, parameters: List[Register]):
+def Equals(cursor: Register, input: int, parameters: List[Register], verbose):
     parameters[2].value = int(parameters[0].value == parameters[1].value)
     return None  # no output
 
