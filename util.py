@@ -53,7 +53,9 @@ def ReadPuzzle():
 
 
 def Answer(part, answer):
+	print("-"*80)
 	print("Part {} answer:".format(part), answer)
+	print("-"*80)
 
 
 class AdventOfCodeDay:
