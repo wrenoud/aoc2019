@@ -8,6 +8,10 @@ from intcode.register import Register
 from intcode.state import State
 
 
+def format_program(data):
+    return list(int(v) for v in data[0].split(','))
+
+
 class Command(object):
     def __init__(self, command: int):
         # padd

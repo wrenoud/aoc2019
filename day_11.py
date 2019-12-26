@@ -7,8 +7,10 @@ BLACK = 0
 WHITE = 1
 
 class Canvas(object):
-    def __init__(self):
+    def __init__(self, colormap = {BLACK: ' ', WHITE: '#'}, inverted = True):
         self.canvas = {}
+        self.colormap = colormap
+        self.inverted = inverted
 
     def paint(self, position: Coord, color:int):
         self.canvas[position] = color
@@ -34,12 +36,10 @@ class Canvas(object):
 
         for key, color in self.canvas.items():
             pos = key - mins
-            if color == BLACK:
-                canvas[pos.y][pos.x] = ' '
-            else:
-                canvas[pos.y][pos.x] = "#"
-
-        canvas.reverse()
+            canvas[pos.y][pos.x] = self.colormap[color]
+        
+        if self.inverted:
+            canvas.reverse()
 
         return "\n".join("".join(str(v) for v in line) for line in canvas)
 
