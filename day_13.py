@@ -10,9 +10,9 @@ from day_11 import Canvas
 
 class Arcade(object):
     def __init__(self, program):
-        program[0] = 2 # enable free play
+        program[0] = 2  # enable free play
 
-        self.canvas = Canvas({0:' ', 1:'#', 2:'X', 3:'T', 4:'O'}, False)
+        self.canvas = Canvas({0: " ", 1: "#", 2: "X", 3: "T", 4: "O"}, False)
         self.segment = 0
         self.stdout = computer.Run(program, self.joystick())
         self.ball = None
@@ -20,11 +20,11 @@ class Arcade(object):
 
     def joystick(self):
         while True:
-            system('cls')
+            system("cls")
 
             print(self.canvas)
             print(self.segment)
-            
+
             if self.paddle.x < self.ball.x:
                 yield 1
             elif self.paddle.x > self.ball.x:
@@ -53,7 +53,7 @@ class Arcade(object):
 def part1(program):
     stdout = computer.Run(program, None)
 
-    canvas = Canvas({0:' ', 1:'#', 2:'X', 3:'T', 4:'O'}, False)
+    canvas = Canvas({0: " ", 1: "#", 2: "X", 3: "T", 4: "O"}, False)
     while True:
         try:
             pos = Coord(next(stdout), next(stdout))
@@ -66,7 +66,7 @@ def part1(program):
     print(canvas)
     util.Answer(1, sum(1 for v in canvas.canvas.values() if v == 2))
 
-        
+
 def part2(program):
 
     arcade = Arcade(program)

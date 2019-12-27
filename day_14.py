@@ -1,6 +1,7 @@
 import util
 import math
 
+
 class OreQuantity(object):
     def __init__(self, element=None, quantity=None, formula=None):
         self.element = element
@@ -11,6 +12,7 @@ class OreQuantity(object):
 
     def __repr__(self):
         return f"{self.quantity} {self.element}"
+
 
 class Reaction(object):
     def __init__(self, formula):
@@ -26,10 +28,14 @@ class Reaction(object):
 def compute_ingredients(quantity, reaction):
     ingredients = []
     for ingredient in reaction.reactants:
-        ingredients.append(OreQuantity(
-            ingredient.element,
-            ingredient.quantity * math.ceil(quantity / reaction.result.quantity)))
+        ingredients.append(
+            OreQuantity(
+                ingredient.element,
+                ingredient.quantity * math.ceil(quantity / reaction.result.quantity),
+            )
+        )
     return ingredients
+
 
 def calc_ore(results, reactions):
     ore = 0
@@ -41,7 +47,9 @@ def calc_ore(results, reactions):
             else:
                 ingredients["ORE"].quantity += result.quantity
         else:
-            for ingredient in compute_ingredients(result.quantity, reactions[result.element]):
+            for ingredient in compute_ingredients(
+                result.quantity, reactions[result.element]
+            ):
                 if ingredient.element not in ingredients:
                     ingredients[ingredient.element] = ingredient
                 else:
@@ -49,11 +57,12 @@ def calc_ore(results, reactions):
 
     return ingredients
 
+
 def part1(data):
     reactions = {}
     for reaction in data:
         reactions[reaction.result.element] = reaction
-    
+
     ingredients = {"FUEL": OreQuantity("FUEL", 1)}
     while "ORE" not in ingredients or len(ingredients) > 1:
         ingredients = calc_ore(ingredients, reactions)
@@ -62,7 +71,7 @@ def part1(data):
 
     util.Answer(1, ingredients["ORE"])
 
-        
+
 def part2(data):
     util.Answer(2, None)
 

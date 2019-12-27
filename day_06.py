@@ -11,7 +11,7 @@ class OrbitalObject(object):
         if self.parent == None:
             return 0
         return self.parent.orbits + 1
-    
+
     def orbitchain(self):
         if self.parent == None:
             return []
@@ -21,13 +21,13 @@ class OrbitalObject(object):
 def part1(objects):
     util.Answer(1, sum(obj.orbits for obj in objects.values()))
 
-        
+
 def part2(objects):
     you = objects["YOU"].orbitchain()
     san = objects["SAN"].orbitchain()
 
     santa = 0
-    for i,obj in enumerate(you[2:]):
+    for i, obj in enumerate(you[2:]):
         try:
             santa = san.index(obj)
             print(i)
