@@ -3,7 +3,10 @@ from intcode import computer, format_program
 from copy import copy
 import msvcrt
 from os import system
-from lib import Coord
+
+from lib import Coord, Maze
+from lib.graph import build_graph, Path
+
 from day_11 import Canvas
 
 
@@ -77,6 +80,27 @@ def part1(program):
     util.Answer(1, None)
 
 
+def get_child_paths(path):
+    paths = []
+
+    for neighbor in path.end.neighbors:
+        node = neighbor.node
+
+        # skip checking backtracks
+        if len(path.path) >= 2 and path.path[-2] == node:
+            continue
+
+        if node not in path:
+            newpath = copy(path)
+            newpath.append(neighbor)
+            paths += get_child_paths(newpath)
+
+    if len(paths) == 0:
+        paths.append(path)
+
+    return paths
+
+
 def part2(data):
     puzzle = [
         "#########################################",
@@ -121,10 +145,23 @@ def part2(data):
         "#         #       #   #     #       #   #",
         "#########################################",
     ]
-    util.Answer(2, None)
+
+    nodes = build_graph(Maze(puzzle), "#", " ", False)
+
+    # find the start position
+    start = None
+    for node in nodes.values():
+        if node.value == "O":
+            start = node.position
+
+    paths = get_child_paths(Path(nodes[start]))
+
+    answer = max(len(path) for path in paths)
+    util.Answer(2, answer)
+    assert answer == 368
 
 
 if __name__ == "__main__":
     data = format_program(util.ReadPuzzle())
-    part1(copy(data))
+    # part1(copy(data))
     part2(copy(data))

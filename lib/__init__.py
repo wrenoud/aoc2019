@@ -49,3 +49,41 @@ class Coord3D(object):
 
     def __repr__(self) -> str:
         return "{}({},{},{})".format(self.__class__.__name__, self.x, self.y, self.z)
+
+
+class Maze(object):
+    def __init__(self, maze):
+        self.maze = maze
+
+    @property
+    def width(self):
+        return len(self.maze[0])
+
+    @property
+    def height(self):
+        return len(self.maze)
+
+    def cell(self, x, y=None):
+        if isinstance(x, Coord):
+            return self.maze[x.y][x.x]
+        return self.maze[y][x]
+
+    def adjacent(self, position: Coord, exclude=None):
+        opendirs = []
+        for position in (
+            Coord(position.x, position.y - 1),
+            Coord(position.x, position.y + 1),
+            Coord(position.x - 1, position.y),
+            Coord(position.x + 1, position.y),
+        ):
+            v = self.cell(position)
+            if exclude is None or v not in exclude:
+                opendirs.append((position, v))
+
+        return opendirs
+
+    def iter(self):
+        """this assumes maze boundaries and does not include them"""
+        for x in range(1, self.width - 1):
+            for y in range(1, self.height - 1):
+                yield (Coord(x, y), self.cell(x, y))
